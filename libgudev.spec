@@ -4,7 +4,7 @@
 #
 Name     : libgudev
 Version  : 230
-Release  : 1
+Release  : 2
 URL      : http://ftp.gnome.org/pub/gnome/sources/libgudev/230/libgudev-230.tar.xz
 Source0  : http://ftp.gnome.org/pub/gnome/sources/libgudev/230/libgudev-230.tar.xz
 Summary  : GObject bindings for libudev
