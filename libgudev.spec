@@ -4,21 +4,27 @@
 #
 Name     : libgudev
 Version  : 230
-Release  : 4
+Release  : 5
 URL      : http://ftp.gnome.org/pub/gnome/sources/libgudev/230/libgudev-230.tar.xz
 Source0  : http://ftp.gnome.org/pub/gnome/sources/libgudev/230/libgudev-230.tar.xz
 Summary  : GObject bindings for libudev
 Group    : Development/Tools
 License  : LGPL-2.1
 Requires: libgudev-lib
-Requires: libgudev-data
 BuildRequires : docbook-xml
+BuildRequires : gcc-dev32
+BuildRequires : gcc-libgcc32
+BuildRequires : gcc-libstdc++32
+BuildRequires : glibc-dev32
+BuildRequires : glibc-libc32
 BuildRequires : gobject-introspection
 BuildRequires : gobject-introspection-dev
 BuildRequires : grep
 BuildRequires : gtk-doc
 BuildRequires : gtk-doc-dev
 BuildRequires : libxslt-bin
+BuildRequires : pkgconfig(32glib-2.0)
+BuildRequires : pkgconfig(32libudev)
 BuildRequires : pkgconfig(glib-2.0)
 BuildRequires : pkgconfig(libudev)
 BuildRequires : sed
@@ -30,42 +36,64 @@ This is libgudev, a library providing GObject bindings for libudev. It
 used to be part of udev, then merged into systemd. It's now a project
 on its own.
 
-%package data
-Summary: data components for the libgudev package.
-Group: Data
-
-%description data
-data components for the libgudev package.
-
-
 %package dev
 Summary: dev components for the libgudev package.
 Group: Development
 Requires: libgudev-lib
-Requires: libgudev-data
 Provides: libgudev-devel
 
 %description dev
 dev components for the libgudev package.
 
 
+%package dev32
+Summary: dev32 components for the libgudev package.
+Group: Default
+Requires: libgudev-lib32
+Requires: libgudev-dev
+
+%description dev32
+dev32 components for the libgudev package.
+
+
 %package lib
 Summary: lib components for the libgudev package.
 Group: Libraries
-Requires: libgudev-data
 
 %description lib
 lib components for the libgudev package.
 
 
+%package lib32
+Summary: lib32 components for the libgudev package.
+Group: Default
+
+%description lib32
+lib32 components for the libgudev package.
+
+
 %prep
 %setup -q -n libgudev-230
+pushd ..
+cp -a libgudev-230 build32
+popd
 
 %build
+export LANG=C
+export SOURCE_DATE_EPOCH=1482959079
 %configure --disable-static
 make V=1  %{?_smp_mflags}
 
+pushd ../build32/
+export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+export CFLAGS="$CFLAGS -m32"
+export CXXFLAGS="$CXXFLAGS -m32"
+export LDFLAGS="$LDFLAGS -m32"
+%configure --disable-static   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+make V=1  %{?_smp_mflags}
+popd
 %check
+export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost
@@ -73,14 +101,20 @@ make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
 rm -rf %{buildroot}
+pushd ../build32/
+%make_install32
+if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
+then
+pushd %{buildroot}/usr/lib32/pkgconfig
+for i in *.pc ; do ln -s $i 32$i ; done
+popd
+fi
+popd
 %make_install
 
 %files
 %defattr(-,root,root,-)
-
-%files data
-%defattr(-,root,root,-)
-/usr/share/gir-1.0/GUdev-1.0.gir
+/usr/lib32/girepository-1.0/GUdev-1.0.typelib
 
 %files dev
 %defattr(-,root,root,-)
@@ -91,10 +125,23 @@ rm -rf %{buildroot}
 /usr/include/gudev-1.0/gudev/gudevenums.h
 /usr/include/gudev-1.0/gudev/gudevenumtypes.h
 /usr/include/gudev-1.0/gudev/gudevtypes.h
-/usr/lib64/*.so
 /usr/lib64/girepository-1.0/GUdev-1.0.typelib
-/usr/lib64/pkgconfig/*.pc
+/usr/lib64/libgudev-1.0.so
+/usr/lib64/pkgconfig/gudev-1.0.pc
+/usr/share/gir-1.0/*.gir
+
+%files dev32
+%defattr(-,root,root,-)
+/usr/lib32/libgudev-1.0.so
+/usr/lib32/pkgconfig/32gudev-1.0.pc
+/usr/lib32/pkgconfig/gudev-1.0.pc
 
 %files lib
 %defattr(-,root,root,-)
-/usr/lib64/*.so.*
+/usr/lib64/libgudev-1.0.so.0
+/usr/lib64/libgudev-1.0.so.0.2.0
+
+%files lib32
+%defattr(-,root,root,-)
+/usr/lib32/libgudev-1.0.so.0
+/usr/lib32/libgudev-1.0.so.0.2.0
