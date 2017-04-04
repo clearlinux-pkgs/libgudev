@@ -4,12 +4,13 @@
 #
 Name     : libgudev
 Version  : 231
-Release  : 6
+Release  : 7
 URL      : https://download.gnome.org/sources/libgudev/231/libgudev-231.tar.xz
 Source0  : https://download.gnome.org/sources/libgudev/231/libgudev-231.tar.xz
 Summary  : GObject bindings for libudev
 Group    : Development/Tools
 License  : LGPL-2.1
+Requires: libgudev-data
 Requires: libgudev-lib
 BuildRequires : docbook-xml
 BuildRequires : gcc-dev32
@@ -36,10 +37,19 @@ This is libgudev, a library providing GObject bindings for libudev. It
 used to be part of udev, then merged into systemd. It's now a project
 on its own.
 
+%package data
+Summary: data components for the libgudev package.
+Group: Data
+
+%description data
+data components for the libgudev package.
+
+
 %package dev
 Summary: dev components for the libgudev package.
 Group: Development
 Requires: libgudev-lib
+Requires: libgudev-data
 Provides: libgudev-devel
 
 %description dev
@@ -50,6 +60,7 @@ dev components for the libgudev package.
 Summary: dev32 components for the libgudev package.
 Group: Default
 Requires: libgudev-lib32
+Requires: libgudev-data
 Requires: libgudev-dev
 
 %description dev32
@@ -59,6 +70,7 @@ dev32 components for the libgudev package.
 %package lib
 Summary: lib components for the libgudev package.
 Group: Libraries
+Requires: libgudev-data
 
 %description lib
 lib components for the libgudev package.
@@ -67,6 +79,7 @@ lib components for the libgudev package.
 %package lib32
 Summary: lib32 components for the libgudev package.
 Group: Default
+Requires: libgudev-data
 
 %description lib32
 lib32 components for the libgudev package.
@@ -80,7 +93,7 @@ popd
 
 %build
 export LANG=C
-export SOURCE_DATE_EPOCH=1489095489
+export SOURCE_DATE_EPOCH=1491323287
 %configure --disable-static --disable-umockdev
 make V=1  %{?_smp_mflags}
 
@@ -100,7 +113,7 @@ export no_proxy=localhost
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1489095489
+export SOURCE_DATE_EPOCH=1491323287
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
@@ -117,6 +130,11 @@ popd
 %defattr(-,root,root,-)
 /usr/lib32/girepository-1.0/GUdev-1.0.typelib
 
+%files data
+%defattr(-,root,root,-)
+/usr/lib64/girepository-1.0/GUdev-1.0.typelib
+/usr/share/gir-1.0/*.gir
+
 %files dev
 %defattr(-,root,root,-)
 /usr/include/gudev-1.0/gudev/gudev.h
@@ -126,10 +144,8 @@ popd
 /usr/include/gudev-1.0/gudev/gudevenums.h
 /usr/include/gudev-1.0/gudev/gudevenumtypes.h
 /usr/include/gudev-1.0/gudev/gudevtypes.h
-/usr/lib64/girepository-1.0/GUdev-1.0.typelib
 /usr/lib64/libgudev-1.0.so
 /usr/lib64/pkgconfig/gudev-1.0.pc
-/usr/share/gir-1.0/*.gir
 
 %files dev32
 %defattr(-,root,root,-)
