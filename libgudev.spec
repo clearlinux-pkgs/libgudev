@@ -4,7 +4,7 @@
 #
 Name     : libgudev
 Version  : 231
-Release  : 7
+Release  : 8
 URL      : https://download.gnome.org/sources/libgudev/231/libgudev-231.tar.xz
 Source0  : https://download.gnome.org/sources/libgudev/231/libgudev-231.tar.xz
 Summary  : GObject bindings for libudev
