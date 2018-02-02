@@ -4,7 +4,7 @@
 #
 Name     : libgudev
 Version  : 232
-Release  : 9
+Release  : 10
 URL      : https://download.gnome.org/sources/libgudev/232/libgudev-232.tar.xz
 Source0  : https://download.gnome.org/sources/libgudev/232/libgudev-232.tar.xz
 Summary  : GObject bindings for libudev
