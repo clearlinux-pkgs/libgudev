@@ -4,14 +4,16 @@
 #
 Name     : libgudev
 Version  : 232
-Release  : 11
+Release  : 12
 URL      : https://download.gnome.org/sources/libgudev/232/libgudev-232.tar.xz
 Source0  : https://download.gnome.org/sources/libgudev/232/libgudev-232.tar.xz
 Summary  : GObject bindings for libudev
 Group    : Development/Tools
 License  : LGPL-2.1
-Requires: libgudev-data
-Requires: libgudev-lib
+Requires: libgudev-data = %{version}-%{release}
+Requires: libgudev-lib = %{version}-%{release}
+Requires: libgudev-license = %{version}-%{release}
+BuildRequires : buildreq-gnome
 BuildRequires : docbook-xml
 BuildRequires : gcc-dev32
 BuildRequires : gcc-libgcc32
@@ -24,6 +26,7 @@ BuildRequires : grep
 BuildRequires : gtk-doc
 BuildRequires : gtk-doc-dev
 BuildRequires : libxslt-bin
+BuildRequires : pkg-config
 BuildRequires : pkgconfig(32gio-2.0)
 BuildRequires : pkgconfig(32glib-2.0)
 BuildRequires : pkgconfig(32gobject-2.0)
@@ -52,9 +55,10 @@ data components for the libgudev package.
 %package dev
 Summary: dev components for the libgudev package.
 Group: Development
-Requires: libgudev-lib
-Requires: libgudev-data
-Provides: libgudev-devel
+Requires: libgudev-lib = %{version}-%{release}
+Requires: libgudev-data = %{version}-%{release}
+Provides: libgudev-devel = %{version}-%{release}
+Requires: libgudev = %{version}-%{release}
 
 %description dev
 dev components for the libgudev package.
@@ -63,9 +67,9 @@ dev components for the libgudev package.
 %package dev32
 Summary: dev32 components for the libgudev package.
 Group: Default
-Requires: libgudev-lib32
-Requires: libgudev-data
-Requires: libgudev-dev
+Requires: libgudev-lib32 = %{version}-%{release}
+Requires: libgudev-data = %{version}-%{release}
+Requires: libgudev-dev = %{version}-%{release}
 
 %description dev32
 dev32 components for the libgudev package.
@@ -74,7 +78,8 @@ dev32 components for the libgudev package.
 %package lib
 Summary: lib components for the libgudev package.
 Group: Libraries
-Requires: libgudev-data
+Requires: libgudev-data = %{version}-%{release}
+Requires: libgudev-license = %{version}-%{release}
 
 %description lib
 lib components for the libgudev package.
@@ -83,10 +88,19 @@ lib components for the libgudev package.
 %package lib32
 Summary: lib32 components for the libgudev package.
 Group: Default
-Requires: libgudev-data
+Requires: libgudev-data = %{version}-%{release}
+Requires: libgudev-license = %{version}-%{release}
 
 %description lib32
 lib32 components for the libgudev package.
+
+
+%package license
+Summary: license components for the libgudev package.
+Group: Default
+
+%description license
+license components for the libgudev package.
 
 
 %prep
@@ -100,17 +114,25 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1504249271
+export SOURCE_DATE_EPOCH=1557015944
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
 %configure --disable-static --disable-umockdev
-make V=1  %{?_smp_mflags}
+make  %{?_smp_mflags}
 
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
-export CFLAGS="$CFLAGS -m32"
-export CXXFLAGS="$CXXFLAGS -m32"
-export LDFLAGS="$LDFLAGS -m32"
+export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32"
 %configure --disable-static --disable-umockdev   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
-make V=1  %{?_smp_mflags}
+make  %{?_smp_mflags}
 popd
 %check
 export LANG=C
@@ -118,10 +140,14 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
+cd ../build32;
+make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1504249271
+export SOURCE_DATE_EPOCH=1557015944
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/libgudev
+cp COPYING %{buildroot}/usr/share/package-licenses/libgudev/COPYING
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -169,3 +195,7 @@ popd
 %defattr(-,root,root,-)
 /usr/lib32/libgudev-1.0.so.0
 /usr/lib32/libgudev-1.0.so.0.2.0
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/libgudev/COPYING
