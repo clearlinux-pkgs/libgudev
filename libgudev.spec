@@ -4,7 +4,7 @@
 #
 Name     : libgudev
 Version  : 233
-Release  : 14
+Release  : 15
 URL      : https://download.gnome.org/sources/libgudev/233/libgudev-233.tar.xz
 Source0  : https://download.gnome.org/sources/libgudev/233/libgudev-233.tar.xz
 Summary  : GObject bindings for libudev
@@ -105,6 +105,7 @@ license components for the libgudev package.
 
 %prep
 %setup -q -n libgudev-233
+cd %{_builddir}/libgudev-233
 pushd ..
 cp -a libgudev-233 build32
 popd
@@ -114,14 +115,14 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1568862942
+export SOURCE_DATE_EPOCH=1586219372
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
 %configure --disable-static --disable-umockdev
 make  %{?_smp_mflags}
@@ -145,10 +146,10 @@ cd ../build32;
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1568862942
+export SOURCE_DATE_EPOCH=1586219372
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/libgudev
-cp COPYING %{buildroot}/usr/share/package-licenses/libgudev/COPYING
+cp %{_builddir}/libgudev-233/COPYING %{buildroot}/usr/share/package-licenses/libgudev/01a6b4bf79aca9b556822601186afab86e8c4fbf
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -199,4 +200,4 @@ popd
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/libgudev/COPYING
+/usr/share/package-licenses/libgudev/01a6b4bf79aca9b556822601186afab86e8c4fbf
