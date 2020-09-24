@@ -4,7 +4,7 @@
 #
 Name     : libgudev
 Version  : 234
-Release  : 16
+Release  : 17
 URL      : https://download.gnome.org/sources/libgudev/234/libgudev-234.tar.xz
 Source0  : https://download.gnome.org/sources/libgudev/234/libgudev-234.tar.xz
 Summary  : GObject bindings for libudev
