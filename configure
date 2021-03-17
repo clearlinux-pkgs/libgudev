@@ -1,1 +1,2 @@
---disable-umockdev
+-Dtests=disabled
+-Dgtk_doc=false
