@@ -4,7 +4,7 @@
 #
 Name     : libgudev
 Version  : 237
-Release  : 20
+Release  : 21
 URL      : https://download.gnome.org/sources/libgudev/237/libgudev-237.tar.xz
 Source0  : https://download.gnome.org/sources/libgudev/237/libgudev-237.tar.xz
 Summary  : GObject bindings for libudev
